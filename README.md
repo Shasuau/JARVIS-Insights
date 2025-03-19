@@ -6,5 +6,6 @@ Groub Members:
 - Brandon Sharp
 - Blake Brouff
 - Ethan Walsh
+- Tina Nguyen
 
 Project Charter & Inital Project Plan: 
