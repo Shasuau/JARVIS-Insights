@@ -1,0 +1,15 @@
+10.1 Code & Version Control
+Code and version control consists of the following set of rules that all Team members must adhere to when managing project code.
+1.	Maintain branching strategy consisting of
+a.	Main
+b.	Development 
+c.	Feature Branches
+
+2.	Use pulls requests and code reviews,
+a.	Forks and Branches of the main branch are used for changes to GitHub repository. 
+b.	Change commits require
+i.	Pull request to be submitted.
+ii.	Peer reviewed.
+c.	Pull requests are approved as follows,
+i.	Approved by Cody and Blake (or delegate) or,
+ii.	By Majority consensus.
