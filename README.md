@@ -21,6 +21,6 @@ Team Members include,
 ## Project Documentation
 *Links valid for people with existing access*
 - [Project Management Plan](https://csuprod-my.sharepoint.com/:w:/r/personal/bbrouf01_student_csu_edu_au1/Documents/ITC303%20-%20Team%20F.R.I.D.A.Y/Assessment%201/ITC303%20-%20Group%205%20-%20Project%20Management%20Plan%20(Initial).docx?d=w8accb5a19a9e403a9c41d62b3726d72b&csf=1&web=1&e=zIzzHL)
-- [Project Charter]https://csuprod-my.sharepoint.com/:w:/r/personal/bbrouf01_student_csu_edu_au1/Documents/ITC303%20-%20Team%20F.R.I.D.A.Y/Assessment%201/ITC303%20-%20Group%205%20-%20Project%20Charter.docx?d=w04393f03867446749d2b2e4130b44514&csf=1&web=1&e=HmJKJ4)
+- [Project Charter](https://csuprod-my.sharepoint.com/:w:/r/personal/bbrouf01_student_csu_edu_au1/Documents/ITC303%20-%20Team%20F.R.I.D.A.Y/Assessment%201/ITC303%20-%20Group%205%20-%20Project%20Charter.docx?d=w04393f03867446749d2b2e4130b44514&csf=1&web=1&e=HmJKJ4)
 
 
