@@ -24,3 +24,15 @@ Team Members include,
 - [Project Charter](https://csuprod-my.sharepoint.com/:w:/r/personal/bbrouf01_student_csu_edu_au1/Documents/ITC303%20-%20Team%20F.R.I.D.A.Y/Assessment%201/ITC303%20-%20Group%205%20-%20Project%20Charter.docx?d=w04393f03867446749d2b2e4130b44514&csf=1&web=1&e=HmJKJ4)
 
 
+## Continous Integration 
+
+This project uses GitHub Actions to run tests on every push and pull request. 
+
+** Trigger Conditions**
+- Push to any branch
+- Pull request to any branch
+
+**Workflow Summary:**
+- Python 3.8 setup
+- Intall from 'requirments.txt'
+- Run 'pytest' on '/tests'
