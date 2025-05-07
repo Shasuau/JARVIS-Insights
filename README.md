@@ -28,7 +28,7 @@ Team Members include,
 
 This project uses GitHub Actions to run tests on every push and pull request. 
 
-** Trigger Conditions**
+**Trigger Conditions**
 - Push to any branch
 - Pull request to any branch
 
