@@ -1,11 +1,11 @@
 openai: 
   api_key: REPLACE_WITH_YOUR_OPENAI_API_KEY_HERE
 huggingface:
-  token: REPLACE_WITH_YOUR_HUGGINGFACE_TOKEN_HERE # required: huggingface token @ https://huggingface.co/settings/tokens
+  token: ${{ HUGGING_FACE_TOKEN }} # required: huggingface token @ https://huggingface.co/settings/tokens
 dev: false
 debug: false
 log_file: logs/debug.log
-model: text-davinci-003 # currently only support text-davinci-003, gpt-4, we will support more open-source LLMs in the future
+model: gpt-4 # currently only support text-davinci-003, gpt-4, we will support more open-source LLMs in the future
 use_completion: true
 inference_mode: huggingface # local, huggingface or hybrid, prefer hybrid
 local_deployment: minimal # minimal, standard or full, prefer full
