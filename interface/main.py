@@ -17,7 +17,6 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 #Discord Server ID, server target
-# TODO: Config - Racc
 server_id = config["server_id"]
 
 # Build commands
@@ -50,5 +49,4 @@ async def on_message(message):
 			
 
 # Super Secret
-# TODO: Config - Racc
 client.run(config["bot_key"])
