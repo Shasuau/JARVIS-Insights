@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 
-import urllib.request
+import yaml
 
 #Class for commands
 #   Contains basics
@@ -83,7 +83,7 @@ class upload(Command):
 				filename = filename.split('.')[0]
 				# Figure out content types, for file extensions
 				file_extension  = attachment.content_type
-				match file_extension:
+				match file_extension: # Add your supported extensions here
 					case "application/pdf":
 						file_extension = ".pdf"
 					case _:
@@ -113,3 +113,43 @@ class upload(Command):
 					print(f"An error occurred: {error}")
 					file = None
 
+#prompt command
+import requests
+
+class prompt(Command):
+		name = "prompt"
+		desc = "prompts the AI to get an insight based on your prompt in relation to the documentation database."
+		# Our webhook target
+		webhook_target = ""
+
+		def __init__(self, _server_id):
+			super().__init__(_server_id)
+			# Load config
+			location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) # Easy way of finding out where the fuck we are
+			config = yaml.safe_load(open(os.path.join(location, 'config.yaml'))) # This is a dictionary
+			# Setup our webhook target
+			self.webhook_target = config["webhook"]
+
+		async def run(self, message):
+			await Command.run(self, message)
+			# Format message for hacky webhook param
+			message.content.replace(" ", "_")
+			requests.get(self.webhook_target+message.content)
+
+#phelp command
+class help(Command):
+		name = "help"
+		desc = "lists every command, and what it does."
+
+		def __init__(self, _server_id):
+			super().__init__(_server_id)
+
+		async def run(self, message):
+			await Command.run(self, message)
+			final_message = ""
+			# Build commands
+			for child in Command.__subclasses__():
+				command = child(self.server_id)
+				final_message += (command.name+" - "+command.desc+"\n")
+				del command
+			await message.channel.send(final_message)
