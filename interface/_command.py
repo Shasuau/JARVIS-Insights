@@ -148,7 +148,7 @@ class prompt(Command):
 			await message.channel.send("Thinking...")
 
 # Query command
-class prompt(Command):
+class query(Command):
 		name = "query"
 		desc = "prompt the AI to respond to a query on a previous message."
 		# Our webhook target
