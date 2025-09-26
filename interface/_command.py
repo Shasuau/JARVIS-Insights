@@ -3,9 +3,7 @@ from discord import app_commands
 
 import yaml
 
-#Class for commands
-#   Contains basics
-
+# Parent class for commands
 class Command:
 	# Discord command name
 	name = "name_unset"
@@ -21,7 +19,7 @@ class Command:
 	def __init__(self, _server_id):
 		self.server_id = _server_id
 
-#Example Command
+# Example Command
 import requests
 
 from google.auth.transport.requests import Request
@@ -48,7 +46,7 @@ class echo(Command):
 			with open('attachment.jpg', 'wb') as handler: # This probably doesn't support more than one, ie naming issue
 				handler.write(img_data)
 
-#Upload command
+# Upload command
 import google.auth
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -61,12 +59,19 @@ class upload(Command):
 		desc = "Uploads attachments to the target drive in config."
 		# Our
 		service = None
+		# 
+		upload_webhook = ""
 
 		def __init__(self, _server_id):
 			super().__init__(_server_id)
 			# Build our service connection shit to upload the files with
 			creds, _ = google.auth.default()
 			self.service = build("drive", "v3", credentials=creds)
+			# Load config TODO: Please make this a dedicated func - Racc
+			location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) # Easy way of finding out where the fuck we are
+			config = yaml.safe_load(open(os.path.join(location, 'config.yaml'))) # This is a dictionary
+			# Setup our webhook target
+			self.upload_webhook = config["upload_webhook"]
 
 		async def run(self, message):
 			await Command.run(self, message)
@@ -86,8 +91,12 @@ class upload(Command):
 				match file_extension: # Add your supported extensions here
 					case "application/pdf":
 						file_extension = ".pdf"
+					case "application/msword":
+						file_extension = ".doc"
+					case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+						file_extension = ".pptx"
 					case _:
-						await message.channel.send("Unsupported file type!")
+						await message.channel.send("Unsupported file type ("+file_extension+")!")
 						return
 				# Get the attachment data
 				img_data = requests.get(attachment.url).content
@@ -107,15 +116,15 @@ class upload(Command):
 						.execute()
 					)
 					print(f'File ID: {file.get("id")}')
+					# Activate supabase upload workflow
+					requests.get(self.upload_webhook+file.get("id"))
 					# Delete attachment
 					os.remove(location)
 				except HttpError as error:
 					print(f"An error occurred: {error}")
 					file = None
 
-#prompt command
-import requests
-
+# Prompt command
 class prompt(Command):
 		name = "prompt"
 		desc = "prompts the AI to get an insight based on your prompt in relation to the documentation database."
@@ -124,19 +133,50 @@ class prompt(Command):
 
 		def __init__(self, _server_id):
 			super().__init__(_server_id)
-			# Load config
+			# Load config TODO: Please make this a dedicated func - Racc
 			location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) # Easy way of finding out where the fuck we are
 			config = yaml.safe_load(open(os.path.join(location, 'config.yaml'))) # This is a dictionary
 			# Setup our webhook target
-			self.webhook_target = config["webhook"]
+			self.webhook_target = config["prompt_webhook"]
 
 		async def run(self, message):
 			await Command.run(self, message)
 			# Format message for hacky webhook param
 			message.content.replace(" ", "_")
 			requests.get(self.webhook_target+message.content)
+			# User feedback
+			await message.channel.send("Thinking...")
 
-#phelp command
+# Query command
+class prompt(Command):
+		name = "query"
+		desc = "prompt the AI to respond to a query on a previous message."
+		# Our webhook target
+		webhook_target = ""
+
+		def __init__(self, _server_id):
+			super().__init__(_server_id)
+			# Load config TODO: Please make this a dedicated func - Racc
+			location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) # Easy way of finding out where the fuck we are
+			config = yaml.safe_load(open(os.path.join(location, 'config.yaml'))) # This is a dictionary
+			# Setup our webhook target
+			self.webhook_target = config["prompt_webhook"]
+
+		async def run(self, message):
+			await Command.run(self, message)
+			try:
+				reply = await message.channel.fetch_message(message.reference.message_id)
+			except:
+				await message.channel.send("Could not find reply!")
+				return
+			# Format message for hacky webhook param
+			message.content.replace(" ", "_")
+			requests.get(self.webhook_target+message.content+"("+reply.content+")")
+			# User feedback
+			await message.channel.send("Thinking...")
+
+
+# Help command
 class help(Command):
 		name = "help"
 		desc = "lists every command, and what it does."

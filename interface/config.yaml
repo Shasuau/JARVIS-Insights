@@ -1,3 +1,5 @@
-server_id: 0
+server_id: 1
 bot_key: ""
-webhook: ""
+
+prompt_webhook: ""
+upload_webhook: ""
