@@ -1,0 +1,920 @@
+{
+  "name": "Google to Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1392,
+        -176
+      ],
+      "id": "73f6950e-2ccf-454a-a7b9-6e2a131f3662",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Ae6fsJPm89JwiFx",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1ZB4_qBmfsYUYxz02ARX932P77vOsi_BO",
+          "mode": "list",
+          "cachedResultName": "n8n-JARVIS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ZB4_qBmfsYUYxz02ARX932P77vOsi_BO"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        -368
+      ],
+      "id": "19f2e56e-98ae-4204-b23a-b5a839a72320",
+      "name": "Create File - Google",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8r3GyMtKmD1jHAM8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Create File - Google').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "drawingsToFormat": "application/pdf",
+              "slidesToFormat": "application/pdf",
+              "sheetsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1328,
+        -272
+      ],
+      "id": "d19ccc7c-5977-45f4-ac7f-cab1dc28cac1",
+      "name": "Download file",
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8r3GyMtKmD1jHAM8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        64
+      ],
+      "id": "e583509e-9b05-42ab-9aa8-01ce094cae10",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "sM42RlEhfmFJJ3Pz",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "DocName",
+                "value": "={{ $json.DocName }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1488,
+        64
+      ],
+      "id": "a08174f2-e129-45ed-a7bf-2e30cafcc79a",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 3000,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        272
+      ],
+      "id": "3dc75e83-8fe0-4ad5-9d13-902770028c9a",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "=https://v2.convertapi.com/convert/office/to/pdf?Secret=5AlcZEvjXjj1jIqvwcjjKTsxFQw8WZ98",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        -128
+      ],
+      "id": "31f7014d-4a23-451c-98f8-55ec25ea8f4a",
+      "name": "ConvertAPI HTTP Request",
+      "extendsCredential": "convertApi",
+      "credentials": {
+        "convertApi": {
+          "id": "bXUEDrzh36gq4AgT",
+          "name": "ConvertAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "Files[0].FileData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        -128
+      ],
+      "id": "c3a653fc-4011-4b8d-a9d7-d9fb2ec0c450",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -272
+      ],
+      "id": "0d09786e-28eb-455f-b298-7193aa166b29",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3a4d28af-1ee4-490e-bab3-ba1b4aaccce3",
+              "name": "pageContent",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "57dc1173-f9ce-4b1e-9771-233230cc29ec",
+              "name": "DocName",
+              "value": "={{$items(\"Download file\")[0].json.name}}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        -272
+      ],
+      "id": "276ceb33-99c8-4d26-a12a-7ab07f253b29",
+      "name": "Set To Only Txt"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>DocName=like.*{{ $json.DocName }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        -576
+      ],
+      "id": "62f68f34-12a8-4365-922c-8fd284beef75",
+      "name": "Delete a row1",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Ae6fsJPm89JwiFx",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "content",
+              "condition": "eq",
+              "keyValue": "={{ $('Set To Only Txt').item.json.DocName }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        -176
+      ],
+      "id": "db9d4012-884b-4cf7-bd4f-1faa22555e5a",
+      "name": "Delete a row",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "1Ae6fsJPm89JwiFx",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1ZB4_qBmfsYUYxz02ARX932P77vOsi_BO",
+          "mode": "list",
+          "cachedResultName": "n8n-JARVIS",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ZB4_qBmfsYUYxz02ARX932P77vOsi_BO"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        -176
+      ],
+      "id": "2e5b9ff1-c459-49fc-a8c2-4f0366ab162d",
+      "name": "Update File - Google",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8r3GyMtKmD1jHAM8",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c6c6f2fc-b51d-4f3f-95f4-cbd8adcc741a",
+                    "leftValue": "={{ $json.fullFileExtension }}",
+                    "rightValue": "pptx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fullFileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b1f105ac-1782-47ad-a9bd-28f33a02527a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -880,
+        -288
+      ],
+      "id": "a386f0e3-63b1-4c12-8c9d-13be2395e311",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = $json.Files || [];\nreturn files.map((f, i) => ({\n  json: {\n    slideNumber: i + 1,\n    fileName: f.FileName,\n    url: f.Url,\n    fileId: f.FileId,\n    fileSize: f.FileSize,\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -528
+      ],
+      "id": "932307ed-d683-4a8c-a76b-0208238ac64e",
+      "name": "Split the files into unique items"
+    },
+    {
+      "parameters": {
+        "jsCode": "/* global $items, $node, $runIndex */\n\nconst APPENDER_NODE = \"Store Generated Content\";  // <- your appender node name\n\n// collect items from ALL runs (batches) of the appender\nlet parts = [];\nfor (let r = 0; r <= $runIndex; r++) {\n  const batchItems = $items(APPENDER_NODE, 0, r) || [];\n  parts.push(...batchItems.map(i => i.json));\n}\n\n// simple HTML escape\nfunction esc(str) {\n  if (!str) return \"\";\n  return String(str).replace(/&/g,\"&amp;\").replace(/</g,\"&lt;\").replace(/>/g,\"&gt;\");\n}\n\nconst sections = parts.map((p, i) => `\n  <h2>Image ${i+1}: ${esc(p.filename || \"image\")}</h2>\n  <pre style=\"white-space: pre-wrap; font-family: ui-monospace, Menlo, Consolas, monospace;\">\n${esc(p.text || \"[no textual content]\")}\n  </pre>\n  <hr/>\n`).join('\\n');\n\nconst title = $node[\"Download file\"]?.json?.name || \"Document\";\n\nconst html = `<!doctype html>\n<html><head><meta charset=\"utf-8\"/>\n<title>${esc(title)}</title>\n<style>\n body{font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:24px}\n h1{font-size:20px;margin-bottom:16px}\n h2{font-size:16px;margin-top:20px}\n hr{margin:16px 0;border:none;border-top:1px solid #ddd}\n</style></head>\n<body>\n  <h1>${esc(title)} — Extracted Content</h1>\n  ${sections || '<p><em>No text extracted.</em></p>'}\n</body></html>`;\n\nreturn [{ json: { html, title } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -720
+      ],
+      "id": "381352bc-4109-4046-8c59-dc2cfb9b12d2",
+      "name": "Append all loops into one file"
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        -720
+      ],
+      "id": "51a11c80-4966-4192-b47f-87aaf02559ce",
+      "name": "Convert File to HTML"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://v2.convertapi.com/convert/html/to/pdf?Secret=5AlcZEvjXjj1jIqvwcjjKTsxFQw8WZ98        ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        -720
+      ],
+      "id": "969efedb-9ed7-447c-bb3c-eb8bd7864077",
+      "name": "ConvetAPI - HTML to PDF",
+      "extendsCredential": "convertApi",
+      "credentials": {
+        "convertApi": {
+          "id": "bXUEDrzh36gq4AgT",
+          "name": "ConvertAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "=Files[0].FileData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        -720
+      ],
+      "id": "b70c9a76-03d6-4fea-ae2a-f71eb42b3890",
+      "name": "Base64 to Binary"
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        -528
+      ],
+      "id": "61fcfbaf-4441-48d2-a90e-8bdf485100dd",
+      "name": "Batching Loop (Size:5)"
+    },
+    {
+      "parameters": {
+        "preBuiltAgentsCalloutHttpRequest": "",
+        "httpVariantWarning": "",
+        "curlImport": "",
+        "method": "POST",
+        "": "",
+        "url": "https://v2.convertapi.com/convert/pptx/to/png?Secret=5AlcZEvjXjj1jIqvwcjjKTsxFQw8WZ98&StoreFile=true            ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "convertApi",
+        "provideSslCertificates": false,
+        "sendQuery": false,
+        "sendHeaders": false,
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "File",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {},
+        "infoMessage": ""
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        -528
+      ],
+      "id": "237b1da6-e3bd-4223-a315-25815036b032",
+      "name": "ConvertAPI PPTX to PNG",
+      "extendsCredential": "convertApi",
+      "credentials": {
+        "convertApi": {
+          "id": "bXUEDrzh36gq4AgT",
+          "name": "ConvertAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Just wrap the content into a clean structure\nconst filename = $json?.metadata?.name || $json?.filename || 'image';\nconst text = $json?.content || '';\n\nreturn {\n  json: {\n    filename,\n    text\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -528
+      ],
+      "id": "a29eebe0-1a6a-4411-b335-5e253834e3fa",
+      "name": "Store Generated Content"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "You are analyzing an image as part of a document ingestion pipeline.  Instructions: - Perform OCR to extract all visible text in the image. - If text is unclear, note it as “[illegible]”. - Preserve logical reading order (e.g., top-to-bottom, left-to-right). - Keep the output in clean plain text (no markdown, no extra commentary). - At the very top, include a header in this format:   === IMAGE START ===   Filename: {{ $json.metadata.name || $json.filename }}   === TEXT === - At the very end, include:   === IMAGE END ===  Output only the extracted text between these markers.",
+        "imageUrls": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        16,
+        -528
+      ],
+      "id": "087df1cd-01a3-4323-a5ea-5ad74c7e67d4",
+      "name": "Analyze image batch",
+      "credentials": {
+        "openAiApi": {
+          "id": "sM42RlEhfmFJJ3Pz",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5fb3b2f7-7d28-4c78-b11c-2e2c6b09b2c0",
+              "name": "DocName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        -272
+      ],
+      "id": "5f85a919-b9e3-4c17-a0ee-1f6725a50533",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create File - Google": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Delete a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Set To Only Txt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set To Only Txt": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update File - Google": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "ConvertAPI PPTX to PNG",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ConvertAPI HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split the files into unique items": {
+      "main": [
+        [
+          {
+            "node": "Batching Loop (Size:5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append all loops into one file": {
+      "main": [
+        [
+          {
+            "node": "Convert File to HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert File to HTML": {
+      "main": [
+        [
+          {
+            "node": "ConvetAPI - HTML to PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvetAPI - HTML to PDF": {
+      "main": [
+        [
+          {
+            "node": "Base64 to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batching Loop (Size:5)": {
+      "main": [
+        [
+          {
+            "node": "Append all loops into one file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze image batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConvertAPI PPTX to PNG": {
+      "main": [
+        [
+          {
+            "node": "Split the files into unique items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Generated Content": {
+      "main": [
+        [
+          {
+            "node": "Batching Loop (Size:5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image batch": {
+      "main": [
+        [
+          {
+            "node": "Store Generated Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Base64 to Binary": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2740bd97-8178-4334-9887-e7208135d099",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd406d8fa141d21c49ef284407f08f1f858aa8385a20b02f364527ac5b3e6293"
+  },
+  "id": "Q7xhrdHZ6swRdw2e",
+  "tags": []
+}
