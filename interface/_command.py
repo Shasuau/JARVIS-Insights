@@ -142,7 +142,7 @@ class prompt(Command):
 		async def run(self, message):
 			await Command.run(self, message)
 			# Format message for hacky webhook param
-			message.content.replace(" ", "_")
+			message.content = message.content.replace(" ", "_")
 			requests.get(self.webhook_target+message.content)
 			# User feedback
 			await message.channel.send("Thinking...")
@@ -170,8 +170,11 @@ class query(Command):
 				await message.channel.send("Could not find reply!")
 				return
 			# Format message for hacky webhook param
-			message.content.replace(" ", "_")
-			requests.get(self.webhook_target+message.content+"("+reply.content+")")
+			final_message = message.content+"_in_the_following_content("+reply.content+")"
+			final_message = final_message.replace(" ", "_")
+			final_message = final_message.replace("\n", "_")
+			final_message = final_message.replace("/", "_slash_")
+			requests.get(self.webhook_target+final_message)
 			# User feedback
 			await message.channel.send("Thinking...")
 
